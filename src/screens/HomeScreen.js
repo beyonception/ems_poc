@@ -1,14 +1,25 @@
 import React from 'react';
-import { View, StatusBar } from 'react-native';
-import Header from '../components/Header';
+import { Dimensions, StatusBar, StyleSheet } from 'react-native';
+import { Block, Text, theme } from "galio-framework"
+import appTheme from "../constants/Theme";
+
+const { width } = Dimensions.get('screen');
 
 const HomeScreen = (props) => {
     return (
-        <View>
-            <StatusBar backgroundColor="#f3f2f5" barStyle="dark-content" />
-            <Header navigation={props.navigation} />
-        </View>
+        <Block flex style={styles.container}>
+            <StatusBar backgroundColor="#dfdfdf" barStyle='dark-content' />
+            <Text size={30}>
+                Dashboard
+            </Text>
+        </Block>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: theme.COLORS.WHITE
+    },
+});
 
 export default HomeScreen;

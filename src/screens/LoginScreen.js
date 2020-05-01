@@ -34,7 +34,7 @@ LoginScreen = (props) =>{
 
     return (
         <View style={styles.viewStyle}>
-        <Image source={require('../assets/images/logo.png')} style={{height:100,width:100, alignSelf:'center', marginTop:45}} />
+        <Image source={require('../../assets/imgs/logo.png')} style={{height:100,width:100, alignSelf:'center', marginTop:45}} />
         <Label textValue="User Name" />
         <Textbox
           secureText={false}

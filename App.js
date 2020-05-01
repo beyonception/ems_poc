@@ -1,31 +1,28 @@
 import "react-native-gesture-handler";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import LoginScreen from './src/screens/LoginScreen';
-import HomeScreen from './src/screens/HomeScreen';
-import CameraScreen from './src/screens/CameraScreen';
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { Block, GalioProvider } from "galio-framework";
+import Screens from "./src/navigation/Screens"
+import { enableScreens } from "react-native-screens";
+enableScreens();
 
-export default function App() {
-  const Drawer = createDrawerNavigator();
-  return (
-    <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Login" component={LoginScreen} />
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Camera" component={CameraScreen} />
-      </Drawer.Navigator>
-    </NavigationContainer>
-    
-  );
+const appTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#66bb6a'
+  }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+      <GalioProvider theme={appTheme}>
+        <Block flex>
+          <Screens />
+        </Block>
+      </GalioProvider>
+    </NavigationContainer>
+
+  );
+}
