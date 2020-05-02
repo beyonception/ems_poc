@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "react-native";
+import { Button } from 'galio-framework';
 
 const ButtonSubmit = (props) => {
   return (
@@ -7,7 +7,8 @@ const ButtonSubmit = (props) => {
       title={props.titleValue}
       onPress={props.onPressHandler}
       style={props.styleValue}
-    />
+      color="info"
+  >{props.titleValue}</Button>
   );
 };
 

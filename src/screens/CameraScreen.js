@@ -3,7 +3,7 @@ import { Text, View, Button } from 'react-native';
 import Header from "../components/Header"
 import CameraView from "../components/CameraView"
 
-const CameraScreen = ({ navigation }) => {
+const CameraScreen = (props) => {
 
   const [isOpenCamera, setIsOpenCamera] = useState(false)
 
@@ -18,7 +18,7 @@ const CameraScreen = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Header navigation={navigation} />
+      <Header navigation={props.navigation} />
       {isOpenCamera && 
         <CameraView 
           onCapture={onPictureSaved}

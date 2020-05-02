@@ -2,6 +2,13 @@
   "expo": {
     "name": "mobileApp",
     "slug": "mobileApp",
+    "android": {
+      "package": "com.beyonception.rentapp"
+  },
+  "ios": {
+    "bundleIdentifier": "com.beyonception.rentapp",
+    "supportsTablet": true
+  },
     "platforms": [
       "ios",
       "android",
@@ -20,9 +27,6 @@
     },
     "assetBundlePatterns": [
       "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    }
+    ]
   }
 }

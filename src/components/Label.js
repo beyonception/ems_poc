@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text } from "galio-framework";
 
 const Label = (props) => {
   return <Text style={props.styleValue}>{props.textValue}</Text>;

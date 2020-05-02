@@ -10,6 +10,9 @@ import { Block } from "galio-framework";
 import LoginScreen from "../screens/LoginScreen";
 import HomeScreen from "../screens/HomeScreen";
 import CameraScreen from "../screens/CameraScreen";
+import SecurityScreen from "../screens/SecurityScreen";
+import RegisterSecurityScreen from '../screens/RegisterSecurityScreen';
+import ManageExpenseScreen from '../screens/ManageExpenseScreen';
 
 // drawer
 import MenuItems from "./Menu";
@@ -70,9 +73,6 @@ function CameraStack(props) {
     );
 }
 
-
-
-
 export default function AppStack(props) {
     return (
         <Drawer.Navigator
@@ -102,10 +102,17 @@ export default function AppStack(props) {
                     fontWeight: "normal"
                 }
             }}
-            initialRouteName="Home"
+            initialRouteName="Login"
         >
             <Drawer.Screen name="Home" component={HomeStack} />
-            <Drawer.Screen name="Manage Expense" component={CameraStack} />
+            <Drawer.Screen name="Manage Expense" component={ManageExpenseScreen} />
+            <Drawer.Screen name="Reports" component={HomeStack} />
+            <Drawer.Screen name="Dashboard" component={HomeStack} />
+            <Drawer.Screen name="Manage Users" component={CameraStack} />
+            <Drawer.Screen name="Login" component={LoginScreen} />
+            <Drawer.Screen name="Sign out" component={LoginScreen} />
+            <Drawer.Screen name="Security" component={SecurityScreen} />
+            <Drawer.Screen name="RegisterSecurity" component={RegisterSecurityScreen} />
         </Drawer.Navigator>
     );
 }

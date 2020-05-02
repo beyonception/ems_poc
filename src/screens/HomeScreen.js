@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect} from 'react';
 import { Dimensions, StatusBar, StyleSheet } from 'react-native';
 import { Block, Text, theme } from "galio-framework"
 import appTheme from "../constants/Theme";
@@ -6,6 +6,7 @@ import appTheme from "../constants/Theme";
 const { width } = Dimensions.get('screen');
 
 const HomeScreen = (props) => {
+
     return (
         <Block flex style={styles.container}>
             <StatusBar backgroundColor="#dfdfdf" barStyle='dark-content' />
