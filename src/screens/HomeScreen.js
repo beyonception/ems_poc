@@ -6,7 +6,6 @@ import appTheme from "../constants/Theme";
 const { width } = Dimensions.get('screen');
 
 const HomeScreen = (props) => {
-
     return (
         <Block flex style={styles.container}>
             <StatusBar backgroundColor="#dfdfdf" barStyle='dark-content' />

@@ -1,67 +1,46 @@
-import React, {Component} from 'react';
-import {Col, Row, Grid} from 'react-native-easy-grid';
-import {Text, TouchableOpacity} from 'react-native';
+import React, { useState, useEffect } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { DataTable } from "react-native-paper";
 
-class DataTable extends Component {
-  render() {
-    let headerValues = [];
-    let dataRows = [];
-    if (this.props.headerData.length > 0) {
-      this.props.headerData.map(data => {
-        headerValues.push(
-          <Col>
-            <Text>{data}</Text>
-          </Col>,
-        );
-      });
-    }
-    if (this.props.innerData.length > 0) {
-      this.props.innerData.map(data => {
-        dataRows.push(
-          <Row style={{height: 40, marginTop: 10}}>
-            <Col size={4}>
-              <Text>{data.expenseName}</Text>
-            </Col>
-            <Col size={2}>
-              <Text>{data.amount}</Text>
-            </Col>
-            <Col size={1}>
-              <TouchableOpacity
-                onPress={() =>this.props.viewDetailsHandler(data)}>
-                <Text>Edit</Text>
-              </TouchableOpacity>
-            </Col>
-            <Col size={1}>
-              
-              <TouchableOpacity
-                onPress={() =>this.props.deleteDetailsHandler(data)}>
-                <Text>Delete</Text>
-              </TouchableOpacity>
-            </Col>
-          </Row>,
-        );
-      });
-    }
-    return (
-      <Grid>
-        <Row style={{height: 40, backgroundColor: '#ba9ffc'}}>
-          <Col size={4} style={{justifyContent: 'center', marginLeft: 5}}>
-            <Text>Expense Name</Text>
-          </Col>
-          <Col size={2} style={{justifyContent: 'center'}}>
-            <Text>Amount</Text>
-          </Col>
-          <Col size={1}>
-            <Text />
-          </Col>
-          <Col size={1}>
-            <Text />
-          </Col>
-        </Row>
-        {dataRows}
-      </Grid>
-    );
+const DataTableDetail = ({headerData, innerData, viewDetailsHandler}) => {
+
+  let headerValues = [];
+  let dataRows = [];
+  if (headerData.length > 0) {
+    let i = 0;
+    headerData.map((data) => {
+      headerValues.push(<DataTable.Title key={i}>{data}</DataTable.Title>);
+      i++;
+    });
   }
-}
+ 
+  if (innerData.length > 0) {
+    innerData.map((data) => {
+      dataRows.push(
+        <DataTable.Row key={data._id}>
+          <DataTable.Cell>{data.expenseName}</DataTable.Cell>
+          <DataTable.Cell>{data.amount}</DataTable.Cell>
+          <DataTable.Cell>
+            <TouchableOpacity
+              onPress={() => viewDetailsHandler(data)}
+            >
+              <View>
+                <Text>Edit</Text>
+              </View>
+            </TouchableOpacity>
+          </DataTable.Cell>
+          <DataTable.Cell>Delete</DataTable.Cell>
+        </DataTable.Row>
+      );
+    });
+  }
 
-export default DataTable;
+  return (
+    <DataTable>
+      <DataTable.Header>{headerValues}</DataTable.Header>
+      {dataRows}
+    </DataTable>
+  );
+};
+
+export default DataTableDetail;

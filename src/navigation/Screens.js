@@ -12,7 +12,7 @@ import HomeScreen from "../screens/HomeScreen";
 import CameraScreen from "../screens/CameraScreen";
 import SecurityScreen from "../screens/SecurityScreen";
 import RegisterSecurityScreen from '../screens/RegisterSecurityScreen';
-import ManageExpenseScreen from '../screens/ManageExpenseScreen';
+import ExpenseScreen from '../screens/ExpenseScreen';
 
 // drawer
 import MenuItems from "./Menu";
@@ -36,6 +36,29 @@ function HomeStack(props) {
                     header: ({ navigation, scene }) => (
                         <Header
                             title="Home"
+                            search
+                            options
+                            navigation={navigation}
+                            scene={scene}
+                        />
+                    ),
+                    cardStyle: { backgroundColor: "#F8F9FE" }
+                }}
+            />
+        </Stack.Navigator>
+    );
+}
+
+function ExpenseStack(props) {
+    return (
+        <Stack.Navigator mode="card" headerMode="screen">
+            <Stack.Screen
+                name="Expense"
+                component={ExpenseScreen}
+                options={{
+                    header: ({ navigation, scene }) => (
+                        <Header
+                            title="Expense"
                             search
                             options
                             navigation={navigation}
@@ -105,10 +128,10 @@ export default function AppStack(props) {
             initialRouteName="Login"
         >
             <Drawer.Screen name="Home" component={HomeStack} />
-            <Drawer.Screen name="Manage Expense" component={ManageExpenseScreen} />
+            <Drawer.Screen name="Manage Expense" component={ExpenseStack} />
             <Drawer.Screen name="Reports" component={HomeStack} />
             <Drawer.Screen name="Dashboard" component={HomeStack} />
-            <Drawer.Screen name="Manage Users" component={CameraStack} />
+            <Drawer.Screen name="Manage Users" component={CameraScreen} />
             <Drawer.Screen name="Login" component={LoginScreen} />
             <Drawer.Screen name="Sign out" component={LoginScreen} />
             <Drawer.Screen name="Security" component={SecurityScreen} />
