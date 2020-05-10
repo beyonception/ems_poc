@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, FlatList } from "react-native";
+import { View, Text, ScrollView, FlatList, Modal, StyleSheet } from "react-native";
 import IsAuthenticated from "../utils";
 import Axios from "axios";
 import config from "../config";
 import DataTableDetail from "../components/Datatable";
-import { Modal, Surface } from "react-native-paper";
+import { Surface, Portal, Provider } from "react-native-paper";
+import Button from "../components/Button";
+import ToastIndicator from "../components/ToastIndicator";
+import { FAB } from 'react-native-paper';
 
 const ExpenseScreen = (props) => {
   const [SpentByUserData, setSpentByUserData] = useState([]);
   const [SpentToData, setSpentToData] = useState([]);
   const [UserData, setUserData] = useState([]);
   const [ExpenseData, setExpenseData] = useState([]);
-  const [IsModalVisible, setIsModalVisible] = useState(false);
+  const [IsShow, setIsShow] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
+  const [Id, setId] = useState("");
   const [ExpenseName, setExpenseName] = useState("");
   const [ExpenseDescription, setExpenseDescription] = useState("");
   const [IsDefaultExpense, setIsDefaultExpense] = useState(true);
@@ -71,53 +76,89 @@ const ExpenseScreen = (props) => {
     getExpenses();
   }, []);
 
-  const viewHandler = (obj) => {
-    console.log(obj);
-    let spentByDetails = [];
-    let spentByValue = "";
-    UserData.map((data) => {
-      obj.spentTo.map((spent) => {
-        if (data.id === spent) {
-          spentByDetails.push(data.value);
-        }
-      });
-      if (data.id === obj.spentBy) {
-        spentByValue = data.value;
-      }
-    });
-    setIsModalVisible(true);
-    setExpenseName(obj.expenseName);
-    setExpenseDescription(obj.expenseDescription);
-    setIsDefaultExpense(obj.defaultExpense);
-    setAmount(obj.amount);
-    setSpentBy(spentByValue);
-    setSpentTo(spentByDetails);
-    setIsModalVisible(true);
+  const deleteExpenseHandler = async (obj) => {
+    if (await IsAuthenticated()) {
+      await Axios.delete(config.EXPENSE_SERVICE + "deleteExpense?id=" + obj._id)
+        .then((res) => {
+          if (res.data !== null || res.data !== undefined) {
+            if (
+              res.data.message !== " " &&
+              res.data.message !== undefined &&
+              res.data.message.toString().toLowerCase() ===
+                "deleted successfully"
+            ) {
+              setId("");
+              setSpentBy("");
+              setExpenseDescription("");
+              setIsDefaultExpense(false);
+              setExpenseName("");
+              setAmount("0");
+              getExpenses();
+              setIsShow(true);
+              setTimeout(() => {
+                setIsShow(false);
+                setErrorMessage("");
+              }, 5000);
+              setErrorMessage(res.data.message);
+            } else {
+              setIsShow(true);
+              setTimeout(() => {
+                setIsShow(false);
+                setErrorMessage("");
+              }, 5000);
+              setErrorMessage("Error in deleting the user");
+            }
+          }
+        })
+        .catch((err) => {
+          if (err.response.status === 400) {
+            setIsShow(true);
+            setTimeout(() => {
+              setIsShow(false);
+              setErrorMessage("");
+            }, 5000);
+            setErrorMessage(err.response.data.message);
+          }
+        });
+    }
   };
 
   return (
-    <ScrollView>
-      <DataTableDetail
-        headerData={["Name", "Amount", "", ""]}
-        innerData={ExpenseData}
-        viewDetailsHandler={(obj) => viewHandler(obj)}
-      />
-      <Modal visible={IsModalVisible} style={{ justifyContent: "center" }}>
-        <View style={{ flex: 1, backgroundColor: "white", padding: 10 }}>
-          <Text style={{ height: 40 }}>Expense Name : {ExpenseName}</Text>
-          <Text style={{ height: 40 }}>
-            Expense Description : {ExpenseDescription}
-          </Text>
-          <Text style={{ height: 40 }}>SpentBy : {SpentBy}</Text>
-          <Text style={{ height: 40 }}>
-            Is Default Expense : {IsDefaultExpense ? "Yes" : "No"}
-          </Text>
-          <Text style={{ height: 40 }}>Amount : {Amount}</Text>
-          <Text style={{ height: 40 }}>Spent To :</Text>
-        </View>
-      </Modal>
+    <ScrollView style={{flex:1}}>
+        <FAB
+    style={styles.fab}
+    large
+    icon="plus"
+    onPress={() => alert('Pressed')}
+  />
+      <ToastIndicator
+        isShowValue={IsShow}
+        position="top"
+        colorValue="error"
+        value={errorMessage}
+      ></ToastIndicator>
+      <View>
+        <DataTableDetail
+          headerData={["Name", "Amount", "", ""]}
+          innerData={ExpenseData}
+          userData={UserData}
+          deleteHandlerData={(obj) => {
+            deleteExpenseHandler(obj);
+          }}
+        />
+      </View>
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    right:0,
+    marginRight:15,
+    marginTop:-30,
+    zIndex:10
+  },
+})
 
 export default ExpenseScreen;
