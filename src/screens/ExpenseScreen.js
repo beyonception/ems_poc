@@ -146,18 +146,14 @@ const ExpenseScreen = (props) => {
   };
 
   const flatListHandler = async (item) => {
-    let spentData = SpentToData;
-    spentData.map((data) => {
-      if (data.id === item.id) {
-        
-        if (item.checkedValue) {
-          data.checkedValue = false;
-        } else {
-          data.checkedValue = true;
-        }
-      }
-    }, () => setSpentToData(spentData));
-    
+    let spentData = []
+    let tmp = {}
+    await Promise.all(SpentToData.map((data) => {
+      tmp = data
+      data.id === item.id && (tmp.checkedValue = !data.checkedValue)
+      spentData.push(tmp)
+    }))
+    setSpentToData(spentData)
   };
 
   let wholeView = [];
