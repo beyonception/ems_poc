@@ -74,6 +74,13 @@ const SecurityScreen = (props) => {
     });
   };
 
+  submitHandler = async (value) =>{
+    setEnteredPin(value);
+    if(enteredPin.length === 4){
+      validatePassCode();
+    }
+  }
+
   return (
     <>
       <ToastIndicator
@@ -91,7 +98,7 @@ const SecurityScreen = (props) => {
           ref={pinView}
           pinLength={4}
           buttonSize={60}
-          onValueChange={(value) => setEnteredPin(value)}
+          onValueChange={(value) => {submitHandler(value)}}
           buttonAreaStyle={{
             marginTop: 24,
           }}

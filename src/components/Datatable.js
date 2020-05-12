@@ -6,8 +6,8 @@ import { ConfirmDialog } from "react-native-simple-dialogs";
 const DataTableDetail = ({ headerData, innerData, userData, deleteHandlerData }) => {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dataValue, setDataValue] = useState([]);
+  
   let dataRows = [];
-
   const deleteHandler = (obj) =>{
     setDialogVisible(true);
     setDataValue(obj);
@@ -39,6 +39,7 @@ const DataTableDetail = ({ headerData, innerData, userData, deleteHandlerData })
           spentByValue = obj.value;
         }
       });
+      
       dataRows.push(
         <List.Accordion key={data._id} title={data.expenseName} id={data._id}>
           <View style={{ flex: 1, flexDirection: "row", marginLeft: 20 }}>

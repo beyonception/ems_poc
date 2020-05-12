@@ -1,23 +1,26 @@
-import React from 'react';
-import { Chip } from 'react-native-paper';
-import { ScrollView } from 'react-native';
+import React from "react";
+import { Chip } from "react-native-paper";
+import { ScrollView } from "react-native";
 
-const ChipView = (props) =>{
-    return (<ScrollView style={{marginTop:50, height:200}}>
-        { props.dataValue.map((data) => {
-            console.log("Hitted")
-          return (<Chip
+const ChipView = (props) => {
+  return (
+    <ScrollView style={{ height: 150 }}>
+      {props.dataValue.map((data) => {
+        return (
+          <Chip
             icon="account-circle"
-            style={{ marginTop: 10 }}
+            style={{ marginTop: 5 }}
             onPress={() => props.pressHandler(data)}
             selected={data.checkedValue}
             selectedColor={data.checkedValue ? "green" : "gray"}
             mode="outlined"
           >
             {data.value}
-          </Chip>)
+          </Chip>
+        );
       })}
-    </ScrollView>)
-}
+    </ScrollView>
+  );
+};
 
 export default ChipView;

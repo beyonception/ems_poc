@@ -10,7 +10,7 @@ const CheckBoxDetail = (props) => {
         status={props.IsSelected ? "checked" : "unchecked"}
         onPress={props.valueChanged}
       ></Checkbox>
-      <Text style={{ flex: 0.5, marginTop: 7 }} >{props.labelValue}</Text>
+      <Text style={{marginTop:7}}>{props.labelValue}</Text>
     </View>
   );
 };
