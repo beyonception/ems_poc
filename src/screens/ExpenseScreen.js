@@ -18,6 +18,7 @@ import { FAB, TextInput } from "react-native-paper";
 import Textbox from "../components/Textbox";
 import DropDown from "../components/DropDown";
 import CheckBoxDetail from "../components/CheckboxDetail";
+import ChipView from '../components/ChipView';
 
 const ExpenseScreen = (props) => {
   const [SpentByUserData, setSpentByUserData] = useState([]);
@@ -144,8 +145,23 @@ const ExpenseScreen = (props) => {
     }
   };
 
+  const flatListHandler = async (item) => {
+    let spentData = SpentToData;
+    spentData.map((data) => {
+      if (data.id === item.id) {
+        
+        if (item.checkedValue) {
+          data.checkedValue = false;
+        } else {
+          data.checkedValue = true;
+        }
+      }
+    }, () => setSpentToData(spentData));
+    
+  };
+
   let wholeView = [];
-  if (!IsAddExpense) {
+  if (IsAddExpense) {
     wholeView.push(
       <View style={{ flex: 1 }}>
         <FAB
@@ -230,18 +246,19 @@ const ExpenseScreen = (props) => {
           valueChanged={() => checkedHandler()}
           labelValue="Is Default Expense"
         ></CheckBoxDetail>
+        <ChipView dataValue={SpentToData} pressHandler={(data) => {flatListHandler(data)}} />
       </View>
     );
   }
 
-  return <View>{ wholeView }</View>;
+  return <View>{wholeView}</View>;
 };
 
 const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     right: 0,
-    bottom:0,
+    bottom: 0,
     marginRight: 15,
     marginTop: 10,
   },
