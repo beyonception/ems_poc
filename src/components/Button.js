@@ -1,14 +1,17 @@
 import React from "react";
-import { Button } from 'galio-framework';
+import { Button } from "react-native-paper";
 
 const ButtonSubmit = (props) => {
   return (
     <Button
-      title={props.titleValue}
-      onPress={props.onPressHandler}
+      mode={props.modeType}
       style={props.styleValue}
-      color="info"
-  >{props.titleValue}</Button>
+      color={props.colorValue}
+      icon={props.iconValue}
+      onPress={() => props.handler()}
+    >
+      {props.titleValue}
+    </Button>
   );
 };
 

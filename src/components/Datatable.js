@@ -1,67 +1,142 @@
-import React, {Component} from 'react';
-import {Col, Row, Grid} from 'react-native-easy-grid';
-import {Text, TouchableOpacity} from 'react-native';
+import React, { useState, useEffect } from "react";
+import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { List, Chip, Button } from "react-native-paper";
+import { ConfirmDialog } from "react-native-simple-dialogs";
 
-class DataTable extends Component {
-  render() {
-    let headerValues = [];
-    let dataRows = [];
-    if (this.props.headerData.length > 0) {
-      this.props.headerData.map(data => {
-        headerValues.push(
-          <Col>
-            <Text>{data}</Text>
-          </Col>,
-        );
-      });
-    }
-    if (this.props.innerData.length > 0) {
-      this.props.innerData.map(data => {
-        dataRows.push(
-          <Row style={{height: 40, marginTop: 10}}>
-            <Col size={4}>
-              <Text>{data.expenseName}</Text>
-            </Col>
-            <Col size={2}>
-              <Text>{data.amount}</Text>
-            </Col>
-            <Col size={1}>
-              <TouchableOpacity
-                onPress={() =>this.props.viewDetailsHandler(data)}>
-                <Text>Edit</Text>
-              </TouchableOpacity>
-            </Col>
-            <Col size={1}>
-              
-              <TouchableOpacity
-                onPress={() =>this.props.deleteDetailsHandler(data)}>
-                <Text>Delete</Text>
-              </TouchableOpacity>
-            </Col>
-          </Row>,
-        );
-      });
-    }
-    return (
-      <Grid>
-        <Row style={{height: 40, backgroundColor: '#ba9ffc'}}>
-          <Col size={4} style={{justifyContent: 'center', marginLeft: 5}}>
-            <Text>Expense Name</Text>
-          </Col>
-          <Col size={2} style={{justifyContent: 'center'}}>
-            <Text>Amount</Text>
-          </Col>
-          <Col size={1}>
-            <Text />
-          </Col>
-          <Col size={1}>
-            <Text />
-          </Col>
-        </Row>
-        {dataRows}
-      </Grid>
-    );
+const DataTableDetail = ({ headerData, innerData, userData, deleteHandlerData }) => {
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [dataValue, setDataValue] = useState([]);
+  
+  let dataRows = [];
+  const deleteHandler = (obj) =>{
+    setDialogVisible(true);
+    setDataValue(obj);
   }
-}
 
-export default DataTable;
+  const deleteYesHandler = () =>{
+    deleteHandlerData(dataValue);
+    setDialogVisible(false);
+  }
+  const deleteNoHandler = () =>{
+    setDialogVisible(false);
+  }
+
+  if (innerData.length > 0) {
+    innerData.map((data) => {
+      let spentByDetails = [];
+      let spentByValue = "";
+      userData.map((obj) => {
+        data.spentTo.map((spent) => {
+          if (obj.id === spent) {
+            spentByDetails.push(
+              <Chip style={{ marginTop: 10, marginRight: 10 }}>
+                {obj.value}
+              </Chip>
+            );
+          }
+        });
+        if (obj.id === data.spentBy) {
+          spentByValue = obj.value;
+        }
+      });
+      
+      dataRows.push(
+        <List.Accordion key={data._id} title={data.expenseName} id={data._id}>
+          <View style={{ flex: 1, flexDirection: "row", marginLeft: 20 }}>
+            <Chip style={{ flex: 0.4, marginTop: 10, marginRight: 10 }}>
+              Description
+            </Chip>
+            <Chip style={{ flex: 0.6, marginTop: 10, marginRight: 10 }}>
+              {data.expenseDescription}
+            </Chip>
+          </View>
+          <View style={{ flex: 1, flexDirection: "row", marginLeft: 20 }}>
+            <Chip style={{ flex: 0.4, marginTop: 10, marginRight: 10 }}>
+              Amount
+            </Chip>
+            <Chip style={{ flex: 0.6, marginTop: 10, marginRight: 10 }}>
+              {data.amount}
+            </Chip>
+          </View>
+          <View style={{ flex: 1, flexDirection: "row", marginLeft: 20 }}>
+            <Chip style={{ flex: 0.4, marginTop: 10, marginRight: 10 }}>
+              Spent By
+            </Chip>
+            <Chip style={{ flex: 0.6, marginTop: 10, marginRight: 10 }}>
+              {spentByValue}
+            </Chip>
+          </View>
+          <View style={{ flex: 1, flexDirection: "row", marginLeft: 20 }}>
+            <Chip style={{ flex: 0.4, marginTop: 10, marginRight: 10 }}>
+              Default Expense
+            </Chip>
+            <Chip style={{ flex: 0.6, marginTop: 10, marginRight: 10 }}>
+              {data.defaultExpense ? "Yes" : "No"}
+            </Chip>
+          </View>
+          <View style={{ flex: 1, flexDirection: "row", marginLeft: 20 }}>
+            <Chip style={{ flex: 0.4, marginTop: 10, marginRight: 10 }}>
+              Spent To
+            </Chip>
+            <View style={{ flex: 0.6 }}>{spentByDetails}</View>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              marginLeft: 20,
+              marginTop: 10,
+            }}
+          >
+            <Button mode="contained" style={{ flex: 0.3 }} icon="pencil">
+              EDIT
+            </Button>
+            <View style={{ flex: 0.1 }}></View>
+            <Button
+              mode="contained"
+              style={{ flex: 0.2 }}
+              color="red"
+              icon="trash-can"
+              onPress={() => deleteHandler(data)}
+            >
+              Delete
+            </Button>
+          </View>
+        </List.Accordion>
+      );
+    });
+  }
+
+  return (
+    <View>
+      <List.AccordionGroup>{dataRows}</List.AccordionGroup>
+      <ConfirmDialog
+        title="Confirm Dialog"
+        message="Are you sure delete?"
+        visible={dialogVisible}
+        onTouchOutside={() => setDialogVisible(false)}
+        positiveButton={{
+          title: "YES",
+          onPress: () => deleteYesHandler(),
+        }}
+        negativeButton={{
+          title: "NO",
+          onPress: () => deleteNoHandler(),
+        }}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  surface: {
+    padding: 8,
+    height: 80,
+    width: 80,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 4,
+  },
+});
+
+export default DataTableDetail;

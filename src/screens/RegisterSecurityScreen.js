@@ -101,7 +101,10 @@ const RegisterSecurityScreen = (props) => {
         />
         <SubmitButton
           titleValue="Confirm"
-          onPressHandler={submitHandler}
+          modeType="contained"
+          colorValue="blue"
+          iconValue="content-save-all"
+          handler={submitHandler}
           styleValue={{ width: 200, marginTop: 10 }}
         />
       </View>

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import SubmitButton from "../components/Button";
 import Textbox from "../components/Textbox";
+
 import Label from "../components/Label";
 import config from "../config";
 import Axios from "axios";
@@ -127,8 +128,11 @@ LoginScreen = (props) => {
         />
         <SubmitButton
           titleValue="Login"
-          onPressHandler={submitHandler}
+          handler={submitHandler}
           styleValue={{ width: 200, marginTop: 10 }}
+          modeType="contained"
+          colorValue="blue"
+          iconValue="content-save-all"
         />
       </View>
     </GalioProvider>

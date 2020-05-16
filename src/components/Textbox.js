@@ -1,12 +1,14 @@
 import React from "react";
-import { Input } from 'galio-framework';
+import { TextInput } from 'react-native-paper';
 
 const Textbox = (props) => {
   return (
-    <Input
+    <TextInput
       secureTextEntry={props.secureText}
+      mode='outlined'
       style={props.textStyle}
       value={props.textValue}
+      label={props.labeValue}
       placeholder={props.placeHolderValue}
       onChangeText={props.onChangedTextHandler}
       keyboardType={props.keyBoardTypeValue}
