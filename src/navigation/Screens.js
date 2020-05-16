@@ -13,6 +13,7 @@ import CameraScreen from "../screens/CameraScreen";
 import SecurityScreen from "../screens/SecurityScreen";
 import RegisterSecurityScreen from '../screens/RegisterSecurityScreen';
 import ExpenseScreen from '../screens/ExpenseScreen';
+import AddExpense from '../screens/AddExpense';
 
 // drawer
 import MenuItems from "./Menu";
@@ -55,6 +56,29 @@ function ExpenseStack(props) {
             <Stack.Screen
                 name="Expense"
                 component={ExpenseScreen}
+                options={{
+                    header: ({ navigation, scene }) => (
+                        <Header
+                            title="Expense"
+                            search
+                            options
+                            navigation={navigation}
+                            scene={scene}
+                        />
+                    ),
+                    cardStyle: { backgroundColor: "#F8F9FE" }
+                }}
+            />
+        </Stack.Navigator>
+    );
+}
+
+function AddExpenseStack(props) {
+    return (
+        <Stack.Navigator mode="card" headerMode="screen">
+            <Stack.Screen
+                name="AddExpense"
+                component={AddExpense}
                 options={{
                     header: ({ navigation, scene }) => (
                         <Header
@@ -136,6 +160,7 @@ export default function AppStack(props) {
             <Drawer.Screen name="Sign out" component={LoginScreen} />
             <Drawer.Screen name="Security" component={SecurityScreen} />
             <Drawer.Screen name="RegisterSecurity" component={RegisterSecurityScreen} />
+            <Drawer.Screen name="AddExpense" component={AddExpenseStack} />
         </Drawer.Navigator>
     );
 }

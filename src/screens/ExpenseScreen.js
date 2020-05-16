@@ -6,6 +6,7 @@ import {
   FlatList,
   Modal,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import IsAuthenticated from "../utils";
 import Axios from "axios";
@@ -19,6 +20,7 @@ import Textbox from "../components/Textbox";
 import DropDown from "../components/DropDown";
 import CheckBoxDetail from "../components/CheckboxDetail";
 import ChipView from "../components/ChipView";
+import SubmitButton from '../components/Button';
 
 const ExpenseScreen = (props) => {
   const [SpentByUserData, setSpentByUserData] = useState([]);
@@ -40,7 +42,7 @@ const ExpenseScreen = (props) => {
   const getUsers = async () => {
     if (await IsAuthenticated()) {
       await Axios.get(config.USER_SERVICE + "getUsers")
-        .then((res) => {
+        .then(async (res) => {
           if (res.data !== null || res.data !== undefined) {
             let organisedData = [];
             res.data.map((data) => {
@@ -50,9 +52,12 @@ const ExpenseScreen = (props) => {
                 checkedValue: false,
               });
             });
-            setSpentByUserData(organisedData);
-            setSpentToData(organisedData);
-            setUserData(organisedData);
+            await Promise.all(
+              setSpentByUserData(organisedData),
+              setSpentToData(organisedData),
+              setUserData(organisedData),
+              setIsAddExpense(false)
+            );
           }
         })
         .catch((err) => {
@@ -68,7 +73,6 @@ const ExpenseScreen = (props) => {
         .then((res) => {
           if (res.data !== null || res.data !== undefined) {
             setExpenseData(res.data);
-            
           }
         })
         .catch((err) => {
@@ -146,19 +150,16 @@ const ExpenseScreen = (props) => {
   };
 
   const flatListHandler = async (item) => {
-    let spentData = SpentToData;
-    spentData.map(
-      (data) => {
-        if (data.id === item.id) {
-          if (item.checkedValue) {
-            data.checkedValue = false;
-          } else {
-            data.checkedValue = true;
-          }
-        }
-      },
-      () => setSpentToData(spentData)
+    let spentData = [];
+    let tmp = {};
+    await Promise.all(
+      SpentToData.map((data) => {
+        tmp = data;
+        data.id === item.id && (tmp.checkedValue = !data.checkedValue);
+        spentData.push(tmp);
+      })
     );
+    setSpentToData(spentData);
   };
 
   const submitHandler = async () => {
@@ -222,134 +223,72 @@ const ExpenseScreen = (props) => {
     }
   };
 
-  const cancelHandler = () =>{
-    setIsAddExpense(false);
-  }
+  const fabClickHandler = () => {
+    props.navigation.navigate("AddExpense", {
+      expenseDetail: "",
+      spentToData: SpentToData,
+      spentByUserData: SpentByUserData,
+      titleDetail:"AddExpense",
+      navigation: props.navigation,
+    });
+  };
 
-  let wholeView = [];
-  if (!IsAddExpense) {
-    wholeView.push(
-      <View style={{ flex: 1 }}>
-        <FAB
-          style={styles.fab}
-          large
-          icon="plus"
-          onPress={() => {alert("clicked");setIsAddExpense(true)}}
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 0, flexDirection: "row" }}>
+        <View style={{ flex: 0.5 }}></View>
+        <TouchableOpacity
+          onPress={() => alert("clicked 1")}
+          style={{ flex: 0.5 }}
+        >
+          <View>
+          <SubmitButton
+          titleValue="Add Expense"
+          handler={fabClickHandler}
+          styleValue={{marginRight:30}}
+          modeType="text"
+          colorValue="blue"
+          iconValue="plus"
         />
-        <ToastIndicator
-            isShowValue={IsShow}
-            position="top"
-            colorValue="error"
-            value={errorMessage}
-          ></ToastIndicator>
-        <ScrollView>
-          <View
-            style={{
-              marginTop: 60,
-              marginRight: 15,
-              marginBottom: 20,
-              marginLeft: 5,
-            }}
-          >
-            <DataTableDetail
-              headerData={["Name", "Amount", "", ""]}
-              innerData={ExpenseData}
-              userData={UserData}
-              deleteHandlerData={(obj) => {
-                deleteExpenseHandler(obj);
-              }}
-            />
           </View>
-        </ScrollView>
+        </TouchableOpacity>
       </View>
-    );
-  } else {
-    wholeView.push(
-      <View style={{ margin: 15 }}>
-        <ScrollView style={{ marginBottom: 20 }}>
-          <Textbox
-            labeValue="Name"
-            textValue={ExpenseName}
-            onChangedTextHandler={(text) => {
-              setExpenseName(text);
-            }}
-            textStyle={{ backgroundColor: "white" }}
-          />
-          <Textbox
-            labeValue="Description"
-            textValue={ExpenseName}
-            onChangedTextHandler={(text) => {
-              setExpenseDescription(text);
-            }}
-            textStyle={{ backgroundColor: "white", marginTop: 15 }}
-          />
-          <TextInput
-            style={{ backgroundColor: "white", marginTop: 15 }}
-            mode="outlined"
-            render={() => (
-              <DropDown
-                dataValue={SpentByUserData}
-                selectedValue={SpentBy}
-                selectedStyle={{ marginTop: 3, marginLeft: 5 }}
-                valueChanged={(text) => {
-                  setSpentBy(text);
-                }}
-                defaultValue="Select Spent By"
-              />
-            )}
-          />
-          <Textbox
-            labeValue="Amount"
-            textValue={Amount}
-            keyBoardTypeValue="numeric"
-            onChangedTextHandler={(text) => {
-              setAmount(text);
-            }}
-            textStyle={{ backgroundColor: "white", marginTop: 15 }}
-          />
-          <CheckBoxDetail
-            checkStyle={{ flex: 0.5 }}
-            IsSelected={IsDefaultExpense}
-            valueChanged={() => checkedHandler()}
-            labelValue="Is Default Expense"
-          ></CheckBoxDetail>
-          <ChipView
-            dataValue={SpentToData}
-            pressHandler={(data) => {
-              flatListHandler(data);
-            }}
-          />
-          <View style={{ flex: 1, flexDirection: "row" }}>
-            <Button
-              modeType="contained"
-              styleValue={{ marginTop: 15, flex: 0.4 }}
-              colorValue="blue"
-              handler={submitHandler()}
-              titleValue="Submit"
-              iconValue="content-save-all"
-            />
-            <View style={{ flex: 0.2 }}></View>
-            <Button
-              modeType="outlined"
-              styleValue={{ marginTop: 15, flex: 0.4 }}
-              colorValue="blue"
-              handler={cancelHandler()}
-              titleValue="Cancel"
-              iconValue="cancel"
-            />
-          </View>
-        </ScrollView>
-      </View>
-    );
-  }
 
-  return <View>{wholeView}</View>;
+      <ToastIndicator
+        isShowValue={IsShow}
+        position="top"
+        colorValue="error"
+        value={errorMessage}
+      ></ToastIndicator>
+      <ScrollView>
+        <View
+          style={{
+            marginRight: 15,
+            marginBottom: 20,
+            marginLeft: 5,
+          }}
+        >
+          <DataTableDetail
+            headerData={["Name", "Amount", "", ""]}
+            innerData={ExpenseData}
+            userData={UserData}
+            deleteHandlerData={(obj) => {
+              deleteExpenseHandler(obj);
+            }}
+          />
+        </View>
+      </ScrollView>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   fab: {
     position: "absolute",
-    right:0
+    right: 0,
+    top: -62,
+    marginBottom: 20,
+    marginRight: 20,
   },
 });
 
