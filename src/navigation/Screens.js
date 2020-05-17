@@ -82,7 +82,7 @@ function AddExpenseStack(props) {
                 options={{
                     header: ({ navigation, scene }) => (
                         <Header
-                            title="Expense"
+                            title="Add Expense"
                             search
                             options
                             navigation={navigation}
@@ -160,7 +160,7 @@ export default function AppStack(props) {
             <Drawer.Screen name="Sign out" component={LoginScreen} />
             <Drawer.Screen name="Security" component={SecurityScreen} />
             <Drawer.Screen name="RegisterSecurity" component={RegisterSecurityScreen} />
-            <Drawer.Screen name="AddExpense" component={AddExpenseStack} />
+            <Drawer.Screen name="AddExpense" component={AddExpense} />
         </Drawer.Navigator>
     );
 }

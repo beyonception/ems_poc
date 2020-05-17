@@ -21,6 +21,8 @@ import DropDown from "../components/DropDown";
 import CheckBoxDetail from "../components/CheckboxDetail";
 import ChipView from "../components/ChipView";
 import SubmitButton from '../components/Button';
+import AddExpense from "./AddExpense";
+import { useIsFocused } from '@react-navigation/native';
 
 const ExpenseScreen = (props) => {
   const [SpentByUserData, setSpentByUserData] = useState([]);
@@ -92,7 +94,11 @@ const ExpenseScreen = (props) => {
     getUsers();
     getExpenses();
   }, []);
-
+  const isFocused = useIsFocused();
+  if(isFocused){
+    getExpenses();
+  }
+  
   const deleteExpenseHandler = async (obj) => {
     if (await IsAuthenticated()) {
       await Axios.delete(config.EXPENSE_SERVICE + "deleteExpense?id=" + obj._id)
@@ -141,95 +147,11 @@ const ExpenseScreen = (props) => {
     }
   };
 
-  const checkedHandler = () => {
-    if (IsDefaultExpense) {
-      setIsDefaultExpense(false);
-    } else {
-      setIsDefaultExpense(true);
-    }
-  };
-
-  const flatListHandler = async (item) => {
-    let spentData = [];
-    let tmp = {};
-    await Promise.all(
-      SpentToData.map((data) => {
-        tmp = data;
-        data.id === item.id && (tmp.checkedValue = !data.checkedValue);
-        spentData.push(tmp);
-      })
-    );
-    setSpentToData(spentData);
-  };
-
-  const submitHandler = async () => {
-    if (await IsAuthenticated()) {
-      let spentToValue = [];
-      if (SpentToData.length > 0) {
-        SpentToData.map((data) => {
-          if (data.checkedValue) {
-            spentToValue.push(data.id);
-          }
-        });
-      }
-      let expenseDetails = {
-        spentBy: SpentBy,
-        spentTo: spentToValue,
-        expenseName: ExpenseName,
-        expenseDescription: ExpenseDescription,
-        defaultExpense: IsDefaultExpense,
-        amount: Amount.toString(),
-      };
-      await Axios.post(config.EXPENSE_SERVICE + "createExpense", expenseDetails)
-        .then((res) => {
-          if (res.data !== null || res.data !== undefined) {
-            if (res.data._id !== " " && res.data._id !== undefined) {
-              setSpentBy("");
-              setExpenseName("");
-              setExpenseDescription("");
-              setIsDefaultExpense(false);
-              setAmount("0");
-              setIsAdd(true);
-              setUserButtonValue("Add Expense");
-              setIsAddExpense(false);
-              getUsers();
-              getExpenses();
-              setIsShow(true);
-              setTimeout(() => {
-                setIsShow(false);
-                setErrorMessage("");
-              }, 5000);
-              setErrorMessage("Expense added successfully");
-            } else {
-              setIsShow(true);
-              setTimeout(() => {
-                setIsShow(false);
-                setErrorMessage("");
-              }, 5000);
-              setErrorMessage("Error in saving the Expense");
-            }
-          }
-        })
-        .catch((err) => {
-          if (err.response.status === 400) {
-            setIsShow(true);
-            setTimeout(() => {
-              setIsShow(false);
-              setErrorMessage("");
-            }, 5000);
-            setErrorMessage(err.response.data.message);
-          }
-        });
-    }
-  };
-
   const fabClickHandler = () => {
+    // return (<AddExpense spentToData={SpentToData} spentByUserData={SpentByUserData} />);
     props.navigation.navigate("AddExpense", {
       expenseDetail: "",
-      spentToData: SpentToData,
-      spentByUserData: SpentByUserData,
-      titleDetail:"AddExpense",
-      navigation: props.navigation,
+      title: "Add Expense"
     });
   };
 
