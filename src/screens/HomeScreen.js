@@ -11,6 +11,182 @@ const { width } = Dimensions.get('screen');
 
 
 const HomeScreen = (props) => {
+  const [CurrentMonth, setCurrentMonth] = useState("");
+  const [CurrentMonthExpenseAmount, setCurrentMonthExpenseAmount] = useState(0);
+  const [RegisteredUserCount, setRegisteredUserCount] = useState("0");
+  const [ExpenseData, setExpenseData] = useState([]);
+  const [MonthInfo, setMonthInfo] = useState([]);
+  const[IsLoaded, setIsLoaded] = useState(false);
+  
+//   const  onPickerValueChange =  ()=>{
+// setCurrentMonth(this.value);
+//   }
+let MonthArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const MonthData  =() => {
+    let data = [];
+    
+    let today = new Date();
+    
+    data.push({MonthText:MonthArray[today.getMonth()], Month:today.getMonth()+1, Year: today.getFullYear()})
+    setCurrentMonth((today.getMonth()+1) +','+today.getFullYear())
+    const perviousMonth = new Date();
+    const newMonth = perviousMonth.getMonth() - 1;
+    if(newMonth < 0){
+        newMonth += 12;
+        perviousMonth.setYear(d.getYear() - 1);
+    }
+    perviousMonth.setMonth(newMonth);
+    data.push({MonthText:MonthArray[perviousMonth.getMonth()], Month:perviousMonth.getMonth()+1, Year: perviousMonth.getFullYear()})
+
+    const perviousMonth1 = new Date();
+    const newMonth_1 = perviousMonth1.getMonth() - 2;
+    if(newMonth_1 < 0){
+      newMonth_1 += 12;
+        perviousMonth1.setYear(d.getYear() - 1);
+    }
+    perviousMonth1.setMonth(newMonth_1);
+    data.push({MonthText:MonthArray[perviousMonth1.getMonth()], Month:perviousMonth1.getMonth()+1, Year: perviousMonth1.getFullYear()})
+setMonthInfo(data);
+// console.log(data);
+  }
+
+  authenticateWithRefreshToken = async userAuth => {
+    await Axios.post(
+      config.AUTH_SERVICE + 'authenticateWithrefreshtoken',
+      userAuth,
+    )
+      .then(res => {
+        AsyncStorage.setItem('userAuth', JSON.stringify(res.data));
+      })
+      .catch(err => {
+        console.log(err.response);
+      });
+  };
+
+  decodeToken = async userAuth => {
+    let userAuth1 = await AsyncStorage.getItem('userAuth');
+    await Axios.post(config.AUTH_SERVICE + 'decodeToken', userAuth)
+      .then(res => {
+        if (res.data.status === 403) {
+          userAuth = {
+            refresh_token: JSON.parse(userAuth1).refresh_token,
+          };
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+  
+
+  getUsers = async () => {
+    let userAuth = {
+      access_token: JSON.parse(await AsyncStorage.getItem('userAuth'))
+        .access_token,
+    };
+    let isAuthorised = await decodeToken(userAuth);
+    if (!isAuthorised) {
+      userAuth = {
+        refresh_token: JSON.parse(await AsyncStorage.getItem('userAuth'))
+          .refresh_token,
+      };
+      await authenticateWithRefreshToken(userAuth);
+      userAuth = {
+        access_token: JSON.parse(await AsyncStorage.getItem('userAuth'))
+          .access_token,
+      };
+      await decodeToken(userAuth);
+    }
+    userAuth = {
+      access_token: JSON.parse(await AsyncStorage.getItem('userAuth'))
+        .access_token,
+    };
+    Axios.defaults.headers.common['Authorization'] =
+      'bearer ' + userAuth.access_token;
+    await Axios.get(config.USER_SERVICE + 'getUsers')
+      .then(res => {
+        let count =[];
+        if (res.data !== null || res.data !== undefined) {
+           count = res.data.filter((item) => {
+            return item.IsActive == true
+         });
+         setRegisteredUserCount(count.length); 
+        }
+      })
+      .catch(err => {
+        if (err.response !== undefined && err.response.status === 400)
+          console.log(err.response.data.message);
+      });
+  };
+
+  const getExpenses = async () => {
+    let userAuth = {
+      access_token: JSON.parse(await AsyncStorage.getItem('userAuth'))
+        .access_token,
+    };
+    let isAuthorised = await decodeToken(userAuth);
+    if (!isAuthorised) {
+      userAuth = {
+        refresh_token: JSON.parse(await AsyncStorage.getItem('userAuth'))
+          .refresh_token,
+      };
+      await authenticateWithRefreshToken(userAuth);
+      userAuth = {
+        access_token: JSON.parse(await AsyncStorage.getItem('userAuth'))
+          .access_token,
+      };
+      await decodeToken(userAuth);
+    }
+    userAuth = {
+      access_token: JSON.parse(await AsyncStorage.getItem('userAuth'))
+        .access_token,
+    };
+    Axios.defaults.headers.common['Authorization'] =
+      'bearer ' + userAuth.access_token;
+      // console.log(config.EXPENSE_SERVICE + 'getDashboardBasedOnMonth?month='+CurrentMonth.split(',')[0]+'&year='+CurrentMonth.split(',')[1]+'')
+      
+    await Axios.get(config.EXPENSE_SERVICE + 'getDashboardBasedOnMonth?month='+CurrentMonth.split(',')[0]+'&year='+CurrentMonth.split(',')[1]+'')
+      .then(res => {
+        // console.log(res);
+        if (res.data !== null || res.data !== undefined) {
+          setExpenseData(res.data);
+          setIsLoaded(true);
+          const currentMonthAmount = res.data.reduce((totalAmount, data) => totalAmount + parseInt(data.TotalAmount, 0), 0);
+          setCurrentMonthExpenseAmount(currentMonthAmount);
+          // console.log(currentMonthAmount);
+          // console.log(res.data);
+          // setState({
+          //   expenseData: res.data,
+          //   IsLoaded: true,
+          // });
+          // console.log("Test");
+        }
+        // consoleconsole.log(ExpenseData[0].UserName);
+      })
+      .catch(err => {
+        // if (err.response !== undefined && err.response.status === 400)
+        // ToastAndroid.showWithGravityAndOffset(
+        //   err.response.data.message,
+        //   // ToastAndroid.LONG,
+        //   // ToastAndroid.BOTTOM,
+        //   25,
+        //   50,
+        // );
+      });
+  };
+
+
+  // componentDidMount = async () => {
+  //   getUsers();
+  //   // this.getExpenses();
+  // };
+  useEffect(() => {
+    getUsers();
+    getExpenses();
+    MonthData();
+    // console.log("ExpenseData");
+  }, []);
+  
     return (
       
         <ScrollView style={styles.container}>
