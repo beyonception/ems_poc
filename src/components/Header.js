@@ -1,6 +1,6 @@
 import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
-import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
+import { TouchableOpacity, StyleSheet, Platform, Dimensions, StatusBar } from 'react-native';
 import { Button, Block, NavBar, Text, theme } from 'galio-framework';
 
 import Icon from './Icon';
@@ -74,6 +74,7 @@ class Header extends React.Component {
 
     return (
       <Block style={headerStyles}>
+        <StatusBar barStyle='default' />
         <NavBar
           back={false}
           title={title}

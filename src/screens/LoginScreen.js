@@ -22,6 +22,23 @@ LoginScreen = (props) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [gotFromSignOut, setGotFromSignOut] = useState(false);
 
+  const decodeUser = async (token) =>{
+    const userDetails = {
+      access_token: token
+    };
+    await Axios.post(config.AUTH_SERVICE + "decodeToken", userDetails)
+      .then(async (res) => {
+        if(res.data !== undefined){
+          await AsyncStorage.setItem("userName", (res.data.user.FirstName + " " + res.data.user.LastName));
+        }
+      })
+      .catch((err) => {
+        if (err.response !== undefined && err.response.status === 400) {
+         
+        }
+      });
+  }
+
   submitHandler = async () => {
     const userDetails = {
       UserName: userName,
@@ -30,6 +47,7 @@ LoginScreen = (props) => {
     await Axios.post(config.USER_SERVICE + "authenticateUser", userDetails)
       .then((res) => {
         AsyncStorage.setItem("userAuth", JSON.stringify(res.data));
+        decodeUser(res.data.access_token);
         setUserName("");
         setPassword("");
         props.navigation.navigate("RegisterSecurity");
@@ -52,6 +70,9 @@ LoginScreen = (props) => {
         console.log("removed");
       });
       AsyncStorage.removeItem("userAuth", (err, result) => {
+        console.log("removed");
+      });
+      AsyncStorage.removeItem("userName", (err, result) => {
         console.log("removed");
       });
     } else {
@@ -81,7 +102,7 @@ LoginScreen = (props) => {
   };
 
   return (
-    <GalioProvider theme={customTheme}>
+    <View theme={customTheme}>
       <ToastIndicator
         isShowValue={isShow}
         position="top"
@@ -98,34 +119,26 @@ LoginScreen = (props) => {
             marginTop: 45,
           }}
         />
-        <Label textValue="User Name" />
+        
         <Textbox
-          secureText={false}
-          textStyle={{
-            height: 40,
-            marginBottom: 10,
-            paddingLeft: 5,
-          }}
-          textValue={userName}
-          placeHolderValue="User Name"
-          onChangedTextHandler={(text) => {
-            setUserName(text);
-          }}
-        />
-        <Label textValue="Password" />
-        <Textbox
-          secureText={true}
-          textStyle={{
-            height: 40,
-            marginBottom: 10,
-            paddingLeft: 5,
-          }}
-          textValue={password}
-          placeHolderValue="Password"
-          onChangedTextHandler={(text) => {
-            setPassword(text);
-          }}
-        />
+            labeValue="User Name"
+            secureText={false}
+            textValue={userName}
+            onChangedTextHandler={(text) => {
+              setUserName(text);
+            }}
+            textStyle={{ backgroundColor: "white",marginBottom:10 }}
+          />
+          <Textbox
+            labeValue="Password"
+            secureText={true}
+            textValue={password}
+            onChangedTextHandler={(text) => {
+              setPassword(text);
+            }}
+            textStyle={{ backgroundColor: "white",marginBottom:10 }}
+          />
+        
         <SubmitButton
           titleValue="Login"
           handler={submitHandler}
@@ -135,7 +148,7 @@ LoginScreen = (props) => {
           iconValue="content-save-all"
         />
       </View>
-    </GalioProvider>
+    </View>
   );
 };
 

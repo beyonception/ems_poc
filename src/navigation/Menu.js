@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { useSafeArea } from "react-native-safe-area-context";
 import {
     ScrollView,
@@ -6,9 +6,12 @@ import {
     Image
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
-
+import {AsyncStorage} from 'react-native';
 import Images from "../constants/Images";
 import DrawerItem from '../components/DrawerItem';
+import IsAuthenticated from '../utils';
+import Axios from 'axios';
+import config from '../config';
 
 function MenuItems({ drawerPosition, navigation, profile, focused, state, ...rest }) {
     const insets = useSafeArea();
@@ -19,6 +22,18 @@ function MenuItems({ drawerPosition, navigation, profile, focused, state, ...res
         "Reports",
         "Sign out"
     ];
+
+    const [UserName, setUserName] = useState("");
+
+    const getLoggedInUser = async () =>{
+        const userName = await AsyncStorage.getItem("userName");
+        setUserName(userName);
+    }
+
+    useEffect(() =>{
+        getLoggedInUser();
+    }, [])
+
     return (
         <Block
             style={styles.container}
@@ -31,7 +46,7 @@ function MenuItems({ drawerPosition, navigation, profile, focused, state, ...res
                     bold={true}
                     color="rgba(0,0,0,0.5)"
                 >
-                    Ananthprasad Narayanan
+                    {UserName}
                 </Text>
             </Block>
             <Block style={{ margin: 5, borderColor: "rgba(0,0,0,0.2)", width: '100%', borderWidth: StyleSheet.hairlineWidth }} />

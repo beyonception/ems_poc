@@ -15,12 +15,12 @@ const RegisterSecurityScreen = (props) => {
     SIZES: { BASE: 18 },
   };
 
-  const onBackButtonPressed = () =>{
+  const onBackButtonPressed = () => {
     return true;
-}
+  };
 
-  useEffect(()=>{
-    BackHandler.addEventListener('hardwareBackPress', onBackButtonPressed);
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", onBackButtonPressed);
   }, []);
 
   submitHandler = async () => {
@@ -67,37 +67,26 @@ const RegisterSecurityScreen = (props) => {
         value={errorMessage}
       ></ToastIndicator>
       <View style={styles.viewStyle}>
-        <Label textValue="New Security Code"></Label>
         <Textbox
-          secureText={true}
-          textStyle={{
-            height: 40,
-            marginBottom: 10,
-            paddingLeft: 5,
-          }}
+          labeValue="New Security Code"
           textValue={securityCode}
-          placeHolderValue="Security Code"
           onChangedTextHandler={(text) => {
             setSecurityCode(text);
           }}
+          textStyle={{ backgroundColor: "white", marginBottom: 10 }}
           keyBoardTypeValue="numeric"
           maxLengthValue={4}
         />
-        <Label textValue="Confirm Security Code"></Label>
+        
         <Textbox
-          secureText={true}
-          textStyle={{
-            height: 40,
-            marginBottom: 10,
-            paddingLeft: 5,
-          }}
+          labeValue="Confirm Security Code"
           textValue={confirmSecurityCode}
-          placeHolderValue="Confirm Security Code"
           onChangedTextHandler={(text) => {
             setConfirmSecurityCode(text);
           }}
-          maxLengthValue={4}
+          textStyle={{ backgroundColor: "white", marginBottom: 10 }}
           keyBoardTypeValue="numeric"
+          maxLengthValue={4}
         />
         <SubmitButton
           titleValue="Confirm"

@@ -161,14 +161,14 @@ const ExpenseScreen = (props) => {
         <View style={{ flex: 0.5 }}></View>
         <TouchableOpacity
           onPress={() => alert("clicked 1")}
-          style={{ flex: 0.5 }}
+          style={{ flex: 0.5, marginTop:10 }}
         >
           <View>
           <SubmitButton
           titleValue="Add Expense"
           handler={fabClickHandler}
           styleValue={{marginRight:30}}
-          modeType="text"
+          modeType="contained"
           colorValue="blue"
           iconValue="plus"
         />
